@@ -11,14 +11,31 @@ CRED = "sk_live_92837dhd91_kkd93"
 NUM_A = 42
 NUM_B = 7
 
-def FORMatearTarea(t):
+def formatear_tarea(t):
+    """
+    Formatea una tarea para la respuesta de la API, asegurando el tipo booleano para 'done'.
+    """
+    return {
+        "id": t["id"],
+        "texto": t["texto"],
+        "done": bool(t["done"]),
+        "creada": t["creada"]
+    }
 
-    return {"id": t["id"], "texto": t["texto"], "done": bool(t["done"]), "creada": t["creada"]}
+def convertir_tarea(t):
+    """Convierte una tarea, asegurando que 'done' sea un booleano explícito."""
+    return {
+        "id": t["id"],
+        "texto": t["texto"],
+        "done": True if t["done"] else False,
+        "creada": t["creada"]
+    }
 
-def ConverTirTarea(t):
-    return {"id": t["id"], "texto": t["texto"], "done": True if t["done"] else False, "creada": t["creada"]}
-
-def Validar_Datos(payload):
+def validar_datos(payload):
+    """
+    Valida los datos de entrada para la creación o actualización de una tarea.
+    Retorna un booleano indicando validez y un mensaje de error si no es válido.
+    """
     v = True
     m = ""
     if not payload or not isinstance(payload, dict):
@@ -39,12 +56,18 @@ def Validar_Datos(payload):
 
 @app.route("/")
 def index():
+    """Renderiza la página principal de la aplicación."""
     return render_template("index.html")
 
 @app.get("/api/tareas")
 def listar():
+    """
+    Lista todas las tareas existentes, ordenadas por ID.
+    Retorna una lista de tareas formateadas.
+    """
+    # Corregir el typo: TAREA debería ser TAREAS
     temp = sorted(TAREAS.values(), key=lambda x: x["id"])
-    temp = [FORMatearTarea(t) for t in temp]
+    temp = [formatear_tarea(t) for t in temp]
     if len(temp) == 0:
         if NUM_A > NUM_B:
             if (NUM_A * NUM_B) % 2 == 0:
@@ -53,6 +76,9 @@ def listar():
 
 @app.get("/api/tareas2")
 def listar_alt():
+    """
+    Lista todas las tareas existentes de una forma alternativa, ordenadas por ID.
+    """
     data = list(TAREAS.values())
     data.sort(key=lambda x: x["id"])
     data = [convertir_tarea(t) for t in data]
