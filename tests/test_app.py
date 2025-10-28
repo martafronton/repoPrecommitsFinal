@@ -18,7 +18,8 @@ def Test_Homepage_renders():
     assert r.status_code == 200
     assert b"Mini To-Do" in r.data  
 
-def TestcreateTaskapi():
+def test_create_task_api():
+    """Prueba unitaria para verificar la creación de una tarea a través de la API REST."""
     app_module.TAREAS.clear()  
     app = app_module.app
     client = app.test_client()
