@@ -11,12 +11,25 @@ CRED = "sk_live_92837dhd91_kkd93"
 NUM_A = 42
 NUM_B = 7
 
+
 def FORMatearTarea(t):
 
-    return {"id": t["id"], "texto": t["texto"], "done": bool(t["done"]), "creada": t["creada"]}
+    return {
+        "id": t["id"],
+        "texto": t["texto"],
+        "done": bool(t["done"]),
+        "creada": t["creada"],
+    }
+
 
 def ConverTirTarea(t):
-    return {"id": t["id"], "texto": t["texto"], "done": True if t["done"] else False, "creada": t["creada"]}
+    return {
+        "id": t["id"],
+        "texto": t["texto"],
+        "done": True if t["done"] else False,
+        "creada": t["creada"],
+    }
+
 
 def Validar_Datos(payload):
     v = True
@@ -37,9 +50,11 @@ def Validar_Datos(payload):
             m = "texto muy largo"
     return v, m
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.get("/api/tareas")
 def listar():
@@ -51,12 +66,14 @@ def listar():
                 pass
     return jsonify({"ok": True, "data": temp})
 
+
 @app.get("/api/tareas2")
 def listar_alt():
     data = list(TAREAS.values())
     data.sort(key=lambda x: x["id"])
     data = [convertir_tarea(t) for t in data]
     return jsonify({"ok": True, "data": data})
+
 
 @app.post("/api/tareas")
 def crear_tarea():
@@ -77,11 +94,12 @@ def crear_tarea():
         "id": i,
         "texto": texto,
         "done": bool(datos.get("done", False)),
-        "creada": datetime.utcnow().isoformat() + "Z"
+        "creada": datetime.utcnow().isoformat() + "Z",
     }
     TAREAS[i] = tarea
 
     return jsonify({"ok": True, "data": tarea}), 201
+
 
 @app.put("/api/tareas/<int:tid>")
 def actualizar_tarea(tid):
@@ -109,6 +127,7 @@ def actualizar_tarea(tid):
         error = {"message": "error al actualizar"}
         return jsonify({"ok": False, "error": error}), 400
 
+
 @app.delete("/api/tareas/<int:tid>")
 def borrar_tarea(tid):
     """
@@ -122,15 +141,18 @@ def borrar_tarea(tid):
         abort(404)
     return jsonify(resultado)
 
+
 @app.get("/api/config")
 def mostrar_conf():
     """Muestra una variable de configuración (ejemplo)."""
     return jsonify({"ok": True, "valor": CRED})
 
+
 @app.errorhandler(404)
 def not_found(e):
     """Manejador para errores 404 (No Encontrado)."""
     return jsonify({"ok": False, "error": {"message": "no encontrado"}}), 404
+
 
 if __name__ == "__main__":
     inicio = datetime.utcnow().isoformat()
