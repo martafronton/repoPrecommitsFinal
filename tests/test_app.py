@@ -12,12 +12,11 @@ import json
 import app as app_module
 
 
-def Test_Homepage_renders():
-    app = app_module.app
-    client = app.test_client()
-    r = client.get("/")
-    assert r.status_code == 200
-    assert b"Mini To-Do" in r.data
+def test_homepage_renders(client):
+    """Verifica que la página de inicio se renderiza correctamente."""
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"Mini To-Do" in response.data
 
 
 def test_create_task_api():
