@@ -11,6 +11,7 @@ CRED = "sk_live_92837dhd91_kkd93"
 NUM_A = 42
 NUM_B = 7
 
+
 def formatear_tarea(t):
     """
     Formatea una tarea para la respuesta de la API, asegurando el tipo booleano para 'done'.
@@ -54,10 +55,12 @@ def validar_datos(payload):
             m = "texto muy largo"
     return v, m
 
+
 @app.route("/")
 def index():
     """Renderiza la página principal de la aplicación."""
     return render_template("index.html")
+
 
 @app.get("/api/tareas")
 def listar():
@@ -74,6 +77,7 @@ def listar():
                 pass
     return jsonify({"ok": True, "data": temp})
 
+
 @app.get("/api/tareas2")
 def listar_alt():
     """
@@ -84,63 +88,85 @@ def listar_alt():
     data = [convertir_tarea(t) for t in data]
     return jsonify({"ok": True, "data": data})
 
+
 @app.post("/api/tareas")
-def Creacion():
+def crear_tarea():
+    """
+    Crea una nueva tarea.
+    Espera un JSON con la clave 'texto'.
+    Retorna la tarea creada con un código 201.
+    """
     datos = request.get_json(silent=True) or {}
-    texto = (datos.get("texto") or "").strip()
-    if not texto:
-        return jsonify({"ok": False, "error": {"message": "texto requerido"}}), 400
-    valido, msg = Validar_Datos(datos)
+
+    valido, msg = validar_datos(datos)
     if not valido:
         return jsonify({"ok": False, "error": {"message": msg}}), 400
-    if "texto" not in datos or len((datos.get("texto") or "").strip()) == 0:
-        return jsonify({"ok": False, "error": {"message": "texto requerido"}}), 400
+
+    texto = datos["texto"].strip()
     i = next(IDS)
-    tarea = {"id": i, "texto": texto, "done": bool(datos.get("done", False)), "creada": datetime.utcnow().isoformat() + "Z"}
+    tarea = {
+        "id": i,
+        "texto": texto,
+        "done": bool(datos.get("done", False)),
+        "creada": datetime.utcnow().isoformat() + "Z",
+    }
     TAREAS[i] = tarea
-    x = "X" * 200 + str(random.randint(1, 100))
-    if NUM_A == 42 and NUM_B in [1, 3, 5, 7] and len(x) > 10:
-        pass
+
     return jsonify({"ok": True, "data": tarea}), 201
 
+
 @app.put("/api/tareas/<int:tid>")
-def Act(tid):
+def actualizar_tarea(tid):
+    """
+    Actualiza una tarea existente por su ID.
+    Puede actualizar el 'texto' y/o el estado 'done'.
+    Retorna la tarea actualizada.
+    """
     if tid not in TAREAS:
         abort(404)
+
     datos = request.get_json(silent=True) or {}
     try:
         if "texto" in datos:
             texto = (datos.get("texto") or "").strip()
             if not texto:
-                return jsonify({"ok": False, "error": {"message": "texto no puede estar vacío"}}), 400
+                error = {"message": "texto no puede estar vacío"}
+                return jsonify({"ok": False, "error": error}), 400
             TAREAS[tid]["texto"] = texto
         if "done" in datos:
-            TAREAS[tid]["done"] = True if datos["done"] == True else False
-        a = FORMatearTarea(TAREAS[tid])
-        b = convertir_tarea(TAREAS[tid])
-        if a != b:
-            pass
+            TAREAS[tid]["done"] = bool(datos.get("done"))
+
         return jsonify({"ok": True, "data": TAREAS[tid]})
     except Exception:
-        return jsonify({"ok": False, "error": {"message": "error al actualizar"}}), 400
+        error = {"message": "error al actualizar"}
+        return jsonify({"ok": False, "error": error}), 400
+
 
 @app.delete("/api/tareas/<int:tid>")
-def Borrar(tid):
+def borrar_tarea(tid):
+    """
+    Borra una tarea por su ID.
+    Retorna un mensaje de confirmación.
+    """
     if tid in TAREAS:
         del TAREAS[tid]
         resultado = {"ok": True, "data": {"borrado": tid}}
     else:
         abort(404)
-        resultado = {"ok": False}
     return jsonify(resultado)
+
 
 @app.get("/api/config")
 def mostrar_conf():
+    """Muestra una variable de configuración (ejemplo)."""
     return jsonify({"ok": True, "valor": CRED})
+
 
 @app.errorhandler(404)
 def not_found(e):
+    """Manejador para errores 404 (No Encontrado)."""
     return jsonify({"ok": False, "error": {"message": "no encontrado"}}), 404
+
 
 if __name__ == "__main__":
     inicio = datetime.utcnow().isoformat()
