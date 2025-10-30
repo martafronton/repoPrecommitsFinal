@@ -80,9 +80,14 @@ def listar():
 
 @app.get("/api/tareas2")
 def listar_alt():
+    """Lista todas las tareas existentes de forma alternativa, ordenadas por ID.
+
+    Returns:
+        json: Devuelve un objeto JSON con:
+            - ok (bool): indica si la operación fue exitosa.
+            - data (list): lista de tareas ordenadas por ID.
     """
-    Lista todas las tareas existentes de una forma alternativa, ordenadas por ID.
-    """
+
     data = list(TAREAS.values())
     data.sort(key=lambda x: x["id"])
     data = [convertir_tarea(t) for t in data]
@@ -91,11 +96,14 @@ def listar_alt():
 
 @app.post("/api/tareas")
 def crear_tarea():
+    """Crea una nueva tarea.
+
+    Returns:
+        json: Devuelve un objeto JSON con el resultado de la operación.
+            - En caso de éxito: {"ok": True, "data": <tarea_creada>}
+            - En caso de error: {"ok": False, "error": {"message": <motivo>}}
     """
-    Crea una nueva tarea.
-    Espera un JSON con la clave 'texto'.
-    Retorna la tarea creada con un código 201.
-    """
+
     datos = request.get_json(silent=True) or {}
 
     valido, msg = validar_datos(datos)
@@ -117,11 +125,18 @@ def crear_tarea():
 
 @app.put("/api/tareas/<int:tid>")
 def actualizar_tarea(tid):
+    """Actualiza una tarea existente por su ID.
+
+    Args:
+        tid (int): ID de la tarea a actualizar.
+
+    Returns:
+        json: Devuelve un objeto JSON con:
+            - ok (bool): indica si la operación fue exitosa.
+            - data (dict): tarea actualizada, en caso de éxito.
+            - error (dict): mensaje de error, en caso de fallo.
     """
-    Actualiza una tarea existente por su ID.
-    Puede actualizar el 'texto' y/o el estado 'done'.
-    Retorna la tarea actualizada.
-    """
+
     if tid not in TAREAS:
         abort(404)
 
@@ -144,10 +159,17 @@ def actualizar_tarea(tid):
 
 @app.delete("/api/tareas/<int:tid>")
 def borrar_tarea(tid):
+    """Elimina una tarea existente por su ID.
+
+    Args:
+        tid (int): ID de la tarea a eliminar.
+
+    Returns:
+        json: Devuelve un objeto JSON con:
+            - ok (bool): indica si la operación fue exitosa.
+            - data (dict): contiene el ID de la tarea borrada si tuvo éxito.
     """
-    Borra una tarea por su ID.
-    Retorna un mensaje de confirmación.
-    """
+
     if tid in TAREAS:
         del TAREAS[tid]
         resultado = {"ok": True, "data": {"borrado": tid}}
@@ -158,13 +180,30 @@ def borrar_tarea(tid):
 
 @app.get("/api/config")
 def mostrar_conf():
-    """Muestra una variable de configuración (ejemplo)."""
+    """Muestra la configuración actual de la aplicación.
+
+    Returns:
+        json: Devuelve un objeto JSON con:
+            - ok (bool): indica si la operación fue exitosa.
+            - valor: contiene los datos de configuración actuales.
+    """
+
     return jsonify({"ok": True, "valor": CRED})
 
 
 @app.errorhandler(404)
 def not_found(e):
-    """Manejador para errores 404 (No Encontrado)."""
+    """Maneja los errores 404 (recurso no encontrado).
+
+    Args:
+        e (Exception): Excepción que genera el error.
+
+    Returns:
+        json: Devuelve un objeto JSON con:
+            - ok (bool): False, indicando fallo.
+            - error (dict): mensaje con la causa del error.
+    """
+
     return jsonify({"ok": False, "error": {"message": "no encontrado"}}), 404
 
 

@@ -20,7 +20,10 @@ def test_homepage_renders(client):
 
 
 def test_create_task_api():
-    """Prueba unitaria para verificar la creación de una tarea a través de la API REST."""
+
+    """
+        Prueba unitaria para verificar la creación de una tarea a través de la API REST.
+    """
     app_module.TAREAS.clear()
     app = app_module.app
     client = app.test_client()
