@@ -13,7 +13,13 @@ import app as app_module
 
 
 def test_homepage_renders(client):
-    """Verifica que la página de inicio se renderiza correctamente."""
+    """Verifica que la página de inicio se renderiza correctamente.
+ 
+    Args:
+        client: Cliente de prueba de Flask para realizar peticiones a la aplicación.
+    """
+
+
     response = client.get("/")
     assert response.status_code == 200
     assert b"Mini To-Do" in response.data

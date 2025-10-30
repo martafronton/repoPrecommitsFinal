@@ -13,8 +13,13 @@ NUM_B = 7
 
 
 def formatear_tarea(t):
-    """
-    Formatea una tarea para la respuesta de la API, asegurando el tipo booleano para 'done'.
+    """Formatea una tarea para la respuesta de la API, asegurando el tipo booleano para 'done'.
+
+    Args:
+        t (objeto): objeto tarea con valores
+
+    Returns:
+        objeto: objeto tarea formateada
     """
     return {
         "id": t["id"],
@@ -24,7 +29,14 @@ def formatear_tarea(t):
     }
 
 def convertir_tarea(t):
-    """Convierte una tarea, asegurando que 'done' sea un booleano explícito."""
+    """Convierte una tarea, asegurando que 'done' sea un booleano explícito.
+    Args:
+        t (objeto): tarea a convertir
+
+    Returns:
+        objeto: tarea convertida
+    """
+   
     return {
         "id": t["id"],
         "texto": t["texto"],
@@ -33,9 +45,16 @@ def convertir_tarea(t):
     }
 
 def validar_datos(payload):
-    """
-    Valida los datos de entrada para la creación o actualización de una tarea.
-    Retorna un booleano indicando validez y un mensaje de error si no es válido.
+    """Valida los datos de entrada para la creación o actualización de una tarea.
+    
+    
+
+    Args:
+        payload (diccionario): un diccionario de datos
+
+    Returns:
+        booleano: Retorna un booleano indicando validez.
+        string: Mensaje de error si no es válido.
     """
     v = True
     m = ""
@@ -58,17 +77,23 @@ def validar_datos(payload):
 
 @app.route("/")
 def index():
-    """Renderiza la página principal de la aplicación."""
+    """Renderiza la página principal de la aplicación.
+
+    Returns:
+        html: renderiza un index.html
+    """
     return render_template("index.html")
 
 
 @app.get("/api/tareas")
 def listar():
+    """Lista todas las tareas existentes, ordenadas por ID.
+    
+
+    Returns:
+        json object:Retorna un objeto JSON con un indicador de éxito y una lista de tareas ordenadas.
     """
-    Lista todas las tareas existentes, ordenadas por ID.
-    Retorna una lista de tareas formateadas.
-    """
-    # Corregir el typo: TAREA debería ser TAREAS
+  
     temp = sorted(TAREAS.values(), key=lambda x: x["id"])
     temp = [formatear_tarea(t) for t in temp]
     if len(temp) == 0:
