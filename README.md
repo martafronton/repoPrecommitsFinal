@@ -94,7 +94,22 @@ del precommit hook en este apartado.
 
 - **Pre commit para pasar los tests**
 ```bash
-('Introduce aquí el comando')
+#!/bin/sh
+echo "Ejecutando pre-commit: tests con Docker..."
+
+# Tests
+echo "Ejecutando tests con pytest..."
+TEST_OUTPUT=$(docker compose run --rm -T dev sh -lc 'pytest -q --disable-warnings --color=no')
+TEST_EXIT=$?
+echo "$TEST_OUTPUT"
+if [ $TEST_EXIT -ne 0 ]; then
+  echo "Algunos tests fallaron. Corrige los errores antes de commitear."
+  exit 1
+fi
+
+echo "Pre-commit finalizado correctamente."
+exit 0
+
 ```
 - **pre commit para formatear el código**
 ```bash
@@ -126,7 +141,21 @@ exit
 ```
 - **pre commit para exigir un formato tipo feat:, fix:, chore:**
 ```bash
-('Introduce aquí el comando')
+#!/bin/sh
+# Valida que el mensaje de commit empiece con feat:, fix:, chore:, refactor:, docs:, test:
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(head -n1 "$COMMIT_MSG_FILE")
+
+if ! echo "$COMMIT_MSG" | grep -Eq '^(feat|fix|chore|refactor|docs|test):'; then
+  echo "Formato de commit inválido."
+  echo "El mensaje debe comenzar con uno de los siguientes prefijos:"
+  echo "  feat:, fix:, chore:, refactor:, docs:, test:"
+  exit 1
+fi
+
+exit 0
+
 ```
 
 ### 2. Ejercicio creacion de Convertir la aplicación en una imagen docker
