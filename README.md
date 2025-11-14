@@ -84,6 +84,51 @@ Tras ejecutar el análisis, los resultados estarán disponibles en http://localh
 - **GitHub Actions / CI**:  
   - Ejecuta tests y comprueba formateo en cada push/PR  
   - Analiza código automáticamente con SonarQube
+
+## 4. Documentación Ejecicios
+
+### 1. Ejercicio creacion de precommit hooks
+
+Como los documentos en `.git` no se suben al proyecto hemos decidido introducir los commandos a introducir dentro
+del precommit hook en este apartado.
+
+- **Pre commit para pasar los tests**
+```bash
+('Introduce aquí el comando')
+```
+- **pre commit para formatear el código**
+```bash
+('Introduce aquí el comando')
+```
+- **pre commit para evitar commits que contengan archivos con un tamaño demasiado grande**
+```bash
+('Introduce aquí el comando')
+```
+- **pre commit para exigir un formato tipo feat:, fix:, chore:**
+```bash
+('Introduce aquí el comando')
+```
+
+### 2. Ejercicio creacion de Convertir la aplicación en una imagen docker
+- Nosotros partimos de que ya tenemmos el dockerfile hecho si en caso de no tenerlo se añadiría estos campos:
+```bash
+
+FROM python:3.11-slim
+
+WORKDIR /app 
+
+COPY . .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 8000
+
+CMD ["python", "app.py"] #app.py se puede cambiar por el nombre de la aplicación en nuestro caso es app.py
+```
+- El siguiente paso, sería ejecutar este comando en el directorio raiz del proyecto
+```bash
+docker build -t nombre_aplicacion .
+```
  
 ## Autores
 * **Victor Albert Bat-Llosera** - [@BatlloseraDev](https://github.com/BatlloseraDev)
