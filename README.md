@@ -98,11 +98,31 @@ del precommit hook en este apartado.
 ```
 - **pre commit para formatear el código**
 ```bash
-('Introduce aquí el comando')
+docker compose run --rm -T dev black .
 ```
 - **pre commit para evitar commits que contengan archivos con un tamaño demasiado grande**
 ```bash
-('Introduce aquí el comando')
+#!/bin/bash
+
+# Tamaño máximo en KB 
+MAX_SIZE=102.400 #100 MB
+
+# Busca archivos añadidos o modificados en el commit
+FILES=$(git diff --cached --name-only)
+
+for file in $FILES; do
+    if [ -f "$file" ]; then
+        SIZE=$(du -k "$file" | cut -f1)
+        if [ "$SIZE" -gt "$MAX_SIZE" ]; then
+            echo "❌ El archivo '$file' excede el tamaño máximo permitido (${MAX_SIZE} KB)."
+            echo "Commit bloqueado."
+            exit 1
+        fi
+    fi
+done
+
+echo "✅ Todos los archivos cumplen con el límite de tamaño."
+exit 
 ```
 - **pre commit para exigir un formato tipo feat:, fix:, chore:**
 ```bash
